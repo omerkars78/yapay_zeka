@@ -4,6 +4,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.ensemble import RandomForestRegressor
+
 import matplotlib.pyplot as plt
 import mysql.connector
 
@@ -68,6 +69,15 @@ def a_coin_5_gunluk_tahminler():
         polySonuc_4_a = lin_reg2.predict(poly_reg.fit_transform([[35]])) # polySonuc_4_a değişkenine lin_reg2 değişkeninin 35. günün tahmini değerini ata
         polySonuc_5_a = lin_reg2.predict(poly_reg.fit_transform([[36]])) # polySonuc_5_a değişkenine lin_reg2 değişkeninin 36. günün tahmini değerini ata
 
+        print(f"Lineer Regresyona Göre A Coinin 5 Günlük Tahmin Verileri:{tahmin_1_a} {tahmin_2_a} {tahmin_3_a} {tahmin_4_a} {tahmin_5_a}")
+        # Lineer Regresyona Göre 5 Günlük Tahmin Verileri
+        
+        print(f"Karar Ağacı Regresyona Göre A Coinin 5 Günlük Tahmin Verileri:{karar_agaci_a_1} {karar_agaci_a_2} {karar_agaci_a_3} {karar_agaci_a_4} {karar_agaci_a_5}")
+        # Karar Ağacı Regresyona Göre 5 Günlük Tahmin Verileri
+
+        print(f"Polinomal Regresyona Göre 5 A Coinin Günlük Tahmin Verileri:{polySonuc_1_a} {polySonuc_2_a} {polySonuc_3_a} {polySonuc_4_a} {polySonuc_5_a}")
+        # Polinomal Regresyona Göre 5 Günlük Tahmin Verileri
+
 
 
 def b_coin_5_gunluk_tahminler():
@@ -114,3 +124,14 @@ def b_coin_5_gunluk_tahminler():
         polySonuc_4_b = lin_reg2.predict(poly_reg.fit_transform([[35]])) # polySonuc_4_b değişkenine lin_reg2 değişkeninin 35. günün tahmini değerini ata
         polySonuc_5_b = lin_reg2.predict(poly_reg.fit_transform([[36]])) # polySonuc_5_b değişkenine lin_reg2 değişkeninin 36. günün tahmini değerini ata
 
+        print(f"Lineer Regresyona Göre B Coinin 5 Günlük Tahmin Verileri:{tahmin_1_b} {tahmin_2_b} {tahmin_3_b} {tahmin_4_b} {tahmin_5_b}")
+        # Lineer Regresyona Göre 5 Günlük Tahmin Verileri
+
+        print(f"Karar Ağacı Regresyona Göre B Coinin 5 Günlük Tahmin Verileri:{karar_agaci_b_1} {karar_agaci_b_2} {karar_agaci_b_3} {karar_agaci_b_4} {karar_agaci_b_5}")
+        # Karar Ağacı Regresyona Göre 5 Günlük Tahmin Verileri
+        
+        print(f"Polinomal Regresyona Göre B Coinin 5 Günlük Tahmin Verileri:{polySonuc_1_b} {polySonuc_2_b}  {polySonuc_3_b}  {polySonuc_4_b}  {polySonuc_5_b}")
+        # Polinomal Regresyona Göre 5 Günlük Tahmin Verileri
+
+
+a_coin_5_gunluk_tahminler()
