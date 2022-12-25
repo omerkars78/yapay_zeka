@@ -256,7 +256,7 @@ def eth_2021() -> None:
 
     # Modelin doğruluğunu test verileriyle ölçün
     accuracy = model_poly.score(X_test_poly, y_test)
-    # print(f"2. dereceden polinomal regresyon modelinin doğruluğu: {accuracy:.3f}")
+    print(f"2. dereceden polinomal regresyon modelinin doğruluğu: {accuracy:.3f}")
 
     # Önümüzdeki 12 ay için tahminler yapın
     X_future_poly = poly.transform(X_future)
@@ -269,7 +269,7 @@ def eth_2021() -> None:
 
     # Modelin doğruluğunu test verileriyle ölçün
     accuracy = model.score(X_test, y_test)
-    # print(f"Karar ağacı modelinin doğruluğu: {accuracy:.3f}")
+    print(f"Karar ağacı modelinin doğruluğu: {accuracy:.3f}")
 
     # Önümüzdeki 12 ay için tahminler yapın
     X_future = np.array(range(1, 13)).reshape(-1, 1)
@@ -381,8 +381,121 @@ def eth_2022() -> None:
     print("2021 Yılı Karar Ağacına göre tahminler:", predictions_2022_rf)
 
 
+def monthly() -> None:
+    
+    # Veri kümenizi pandas veri çerçevesine yükleyin
+    df = pd.read_csv("ekim.csv")
+    df_nov = pd.read_csv("kasim.csv")
 
-eth_2019()
-eth_2020()
-eth_2021()
-eth_2022()
+    # Veri çerçevesinden eğitim ve test verilerini ayırın
+    x = df[['days']]  # Tahmin edilen değişken
+    y = df['eth']  # Tahmin edilen hedef değişken
+    X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=0)
+
+    # Lineer regresyon modelini oluşturun ve eğitin
+    model = LinearRegression()
+    model.fit(X_train, y_train)
+
+    # Modelin doğruluğunu test verileriyle ölçün
+    accuracy = model.score(X_test, y_test)
+    # print(f"Lineer regresyon modelinin doğruluğu: {accuracy:.3f}")
+
+    # Kasım için tahminler yapın
+    X_future = np.array(range(1, 32)).reshape(-1, 1)
+    predictions_oct = model.predict(X_future)
+    print("Ekim Ayı Lineer regresyona göre tahminler:", predictions_oct)
+
+    # 2. dereceden polinomal özellikler oluşturun
+    poly = PolynomialFeatures(degree=2,include_bias=True)
+    X_train_poly = poly.fit_transform(X_train)
+    X_test_poly = poly.transform(X_test)
+
+    # 2. dereceden polinomal regresyon modelini oluşturun ve eğitin
+    model_poly = LinearRegression()
+    model_poly.fit(X_train_poly, y_train)
+
+    # Modelin doğruluğunu test verileriyle ölçün
+    accuracy = model_poly.score(X_test_poly, y_test)
+    print(f"2. dereceden polinomal regresyon modelinin doğruluğu: {accuracy:.3f}")
+
+    # Kasım ayı için tahminler yapın
+    X_future_poly = poly.transform(X_future)
+    predictions_poly_oct = model_poly.predict(X_future_poly)
+    print("Ekim Ayı 2. dereceden polinomal regresyona göre tahminler:", predictions_poly_oct)   
+    
+    # Karar ağacı modelini oluşturun ve eğitin
+    model = RandomForestRegressor(n_estimators=100, random_state=0) # Modeli oluşturun
+    model.fit(X_train, y_train)  # Modeli eğitin
+
+    # Modelin doğruluğunu test verileriyle ölçün
+    accuracy = model.score(X_test, y_test)
+    print(f"Karar ağacı modelinin doğruluğu: {accuracy:.3f}")
+
+    # Kasım için tahminler yapın
+    X_future = np.array(range(1, 32)).reshape(-1, 1)
+    predictions_oct_rf = model.predict(X_future)
+    print("Ekim ayı Karar Ağacına göre tahminler:", predictions_oct_rf)
+
+    print("Kasım Ayının Gerçek Verileri", df_nov.eth)
+    print("""
+    
+    EKİM VERİLERİNDEN TAHMİN EDİLEN KASIM AYI VERİLERİ İLE GERÇEK KASIM AYI VERİLERİNİN KARŞILAŞTIRILMASI
+    
+    """)
+    total_difference = 0
+    for i in range(len(predictions_poly_oct)):
+        if predictions_poly_oct[i] != df_nov.eth[i]:
+            difference = abs(predictions_poly_oct[i] - df_nov.eth[i])
+            percentage_difference = (difference / (predictions_poly_oct[i] + df_nov.eth[i])) * 100
+            total_difference += percentage_difference
+
+            
+            print("Index {} için % {} fark var.Ekim Ayı Veri Karşılaştırması Polinomale göre".format(i, percentage_difference))
+        else:
+            print("Index {} için % 0 fark var.".format(i))
+    average_difference = total_difference / len(predictions_poly_oct)
+    print("Ortalama % {} farklılık oranı var.".format(average_difference))
+    print("""
+
+    """)
+    total_difference = 0
+    for i in range(len(predictions_oct)):
+        if predictions_oct[i] != df_nov.eth[i]:
+            difference = abs(predictions_oct[i] - df_nov.eth[i])
+            percentage_difference = (difference / (predictions_oct[i] + df_nov.eth[i])) * 100
+            total_difference += percentage_difference
+            
+            print("Index {} için yüzde {} fark var.Ekim Ayı Veri Karşılaştırması Lineere göre".format(i, percentage_difference))
+        else:
+            print("Index {} için yüzde 0 fark var.".format(i))
+    average_difference = total_difference / len(predictions_oct)
+    print("Ortalama % {} farklılık oranı var.".format(average_difference))
+    print("""
+
+    """)
+    total_difference = 0
+    for i in range(len(predictions_oct_rf)):
+        if predictions_oct_rf[i] != df_nov.eth[i]:
+            difference = abs(predictions_oct_rf[i] - df_nov.eth[i])
+            percentage_difference = (difference / (predictions_oct_rf[i] + df_nov.eth[i])) * 100
+            total_difference += percentage_difference
+            
+            print("Index {} için yüzde {} fark var.Ekim Ayı Veri Karşılaştırması Karar Ağacına Göre".format(i, percentage_difference))
+        else:
+            print("Index {} için yüzde 0 fark var.".format(i))
+    average_difference = total_difference / len(predictions_oct_rf)
+    print("Ortalama % {} farklılık oranı var.".format(average_difference))
+
+def main():
+    eth_2019()
+    eth_2020()
+    eth_2021()
+    eth_2022()
+    monthly()
+
+main()
+# eth_2019()
+# eth_2020()
+# eth_2021()
+# eth_2022()
+# monthly()
