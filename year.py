@@ -111,3 +111,6 @@ def year() -> None:
             print("Index {} için yüzde 0 fark var.".format(i))
     average_difference = total_difference / len(predictions_2019_rf)
     print("Ortalama % {} farklılık oranı var.".format(average_difference))
+
+
+year()
