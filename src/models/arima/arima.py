@@ -1,22 +1,25 @@
 import pandas as pd
-from statsmodels.tsa.arima_model import ARIMA
-from sklearn.metrics import mean_squared_error
+from statsmodels.tsa.arima.model import ARIMA
 
 # Veri setini yükleme
-data = pd.read_json('your_dataset.json')
+data = pd.read_json('../../data/eth_new_json/eth.json')
 
-# Tarih indeksini ayarlama ve veri setini eğitim/test olarak bölme
-data.index = pd.to_datetime(data['Date'])
-train = data['Value'][:'train_end_date']
-test = data['Value']['test_start_date':]
+# 'index' sütununu DataFrame'in indeksi olarak ayarlama
+data.set_index('index', inplace=True)
 
-# ARIMA modelini eğitme
-model = ARIMA(train, order=(5,1,0))  # Bu parametreler veri setinize göre ayarlanmalıdır.
-model_fit = model.fit(disp=0)
+# Veri setini eğitim seti olarak ayarlama
+train = data['price']
 
-# Tahmin yapma
-predictions = model_fit.forecast(steps=len(test))[0]
+# Gelecek 7 gün için tahminler yapma
+future_predictions = []
+for i in range(7):
+    model = ARIMA(train, order=(5,1,0))
+    model_fit = model.fit()
+    prediction = model_fit.forecast()[0]  # Doğru şekilde tahmin al
+    future_predictions.append(prediction)
+    
+    # Yeni tahmin edilen değeri eğitim verisine ekle
+    new_index = train.index[-1] + pd.Timedelta(days=1)
+    train = train.append(pd.Series(prediction, index=[new_index]))
 
-# Performansı değerlendirme
-error = mean_squared_error(test, predictions)
-print('Test MSE:', error)
+print('Gelecek 7 günün tahminleri:', future_predictions)
